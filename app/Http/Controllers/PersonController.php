@@ -28,12 +28,25 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        $person = Person::create([
-            'firstname' => $request['firstname'],
-            'lastname' => $request['lastname'],
-            'email' => $request['email'],
-            'phone' => $request['phone']
-        ]);
+/*         if (isset ($person))
+        {
+            $person = Person::create([
+                'firstname' => $person['firstname'],
+                'lastname' => $person['lastname'],
+                'email' => $person['email'],
+                'phone' => $person['phone']
+            ]);
+        }
+        else */
+        {
+            $person = Person::create([
+                'firstname' => $request['firstname'],
+                'lastname' => $request['lastname'],
+                'email' => $request['email'],
+                'phone' => $request['phone']
+            ]);
+        }
+
 
         return response()->json([
            'person' => $person,

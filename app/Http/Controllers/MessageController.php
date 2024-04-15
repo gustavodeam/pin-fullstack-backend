@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\PersonController;
 use App\Models\Message;
 use Illuminate\Http\Request;
 
@@ -28,8 +29,30 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
+
+        $userId = $request->input('user_id');
+
+        if (!$userId) 
+        {
+            $personController = new PersonController();
+        
+            $userData = [
+                'firstname' => $request['firstname'],
+                'lastname' => $request['lastname'],
+                'email' => $request['email'],
+                'phone' => $request['phone']
+            ];        
+            $response = $personController->store(new Request($userData));
+            $userId = $response->getData()->person->id;
+        }
+        else
+        {
+            $userId = $request['user_id'];
+        }
+
+
         $message = Message::create([
-            'user_id' => $request['user_id'],
+            'user_id' => $userId,
             'message' => $request['message']
         ]);
 
