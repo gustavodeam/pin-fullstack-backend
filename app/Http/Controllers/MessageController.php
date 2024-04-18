@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\PersonController;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendMessageMailable;
 
 class MessageController extends Controller
 {
@@ -32,16 +34,16 @@ class MessageController extends Controller
 
         $userId = $request->input('user_id');
 
-        if (!$userId) 
-        {
-            $personController = new PersonController();
-        
-            $userData = [
+        $userData = [
                 'firstname' => $request['firstname'],
                 'lastname' => $request['lastname'],
                 'email' => $request['email'],
                 'phone' => $request['phone']
-            ];        
+            ];
+
+        if (!$userId)
+        {
+            $personController = new PersonController();
             $response = $personController->store(new Request($userData));
             $userId = $response->getData()->person->id;
         }
@@ -50,15 +52,27 @@ class MessageController extends Controller
             $userId = $request['user_id'];
         }
 
-
         $message = Message::create([
             'user_id' => $userId,
             'message' => $request['message']
         ]);
 
+
+        $destinatario = ['guztavo@gmail.com', 'gaston13@gmail.com'];
+        $asunto = '¡Nuevo contacto en WebTurismoCBA!';
+        $cuerpoMensaje = "Detalles del usuario:\n\n" .
+                "Nombre: " . $userData['firstname'] . " " . $userData['lastname'] . "\n" .
+                "Correo electrónico: " . $userData['email'] . "\n" .
+                "Teléfono: " . $userData['phone'] . "\n\n" .
+                "Mensaje: " . $message['message'];
+
+    Mail::raw($cuerpoMensaje, function($message) use ($destinatario, $asunto) {
+        $message->to($destinatario)->subject($asunto);
+    });
+
         return response()->json([
            'message' => $message,
-           'result' => 'Tu mensaje fue enviado con éxito' 
+           'result' => 'Tu mensaje fue enviado con éxito'
         ]);
     }
 
