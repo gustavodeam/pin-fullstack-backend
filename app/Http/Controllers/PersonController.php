@@ -62,7 +62,7 @@ class PersonController extends Controller
         $persona = Person::where('email', $email)->first();
 
         if (!$persona) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
+            return response()->json(['error' => 'Usuario no encontrado'], 200);
         }
 
         return response()->json($persona);
